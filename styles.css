@@ -462,6 +462,81 @@ h2 {
   30% { transform: translateY(-0.12em); }
 }
 
+/* ---------- Scenes: pinned stages driven by scroll (motion only) ---------- */
+
+.scene { position: relative; }
+.js-motion .scene { padding-block: 0; }
+.js-motion .scene-sticky {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  height: calc(100svh - var(--header-h));
+  overflow: hidden;
+}
+
+/* Scene: three grey dots (an idea…) merge, turn vermilion, and fill the screen. */
+.scene-dot { background: var(--accent); }
+.scene-dot .scene-sticky {
+  display: grid;
+  place-items: center;
+  padding: clamp(72px, 10vw, 136px) var(--gutter);
+}
+.dot-title {
+  position: relative;
+  z-index: 2;
+  max-width: 15ch;
+  text-align: center;
+  font-size: clamp(2.5rem, 6.6vw, 6.25rem);
+  line-height: 1;
+  color: var(--paper);
+}
+.dot-dots, .dot-fill, .dot-hint { display: none; }
+
+.js-motion .scene-dot { height: 300vh; background: var(--paper); }
+.js-motion .scene-dot .scene-sticky { padding: 0 var(--gutter); }
+
+.js-motion .dot-dots,
+.js-motion .dot-fill {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.js-motion .dot-dots span,
+.js-motion .dot-fill {
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+}
+.js-motion .dot-dots span {
+  position: absolute;
+  background: color-mix(in srgb, var(--accent) calc(var(--conv, 0) * 100%), var(--faint));
+  transform: translateX(calc(var(--off) * (1 - var(--conv, 0))));
+}
+.dot-dots span:nth-child(1) { --off: -48px; }
+.dot-dots span:nth-child(2) { --off: 0px; }
+.dot-dots span:nth-child(3) { --off: 48px; }
+.js-motion .dot-fill {
+  z-index: 1;
+  background: var(--accent);
+  opacity: 0;
+  will-change: transform;
+}
+.js-motion .dot-hint {
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 40px);
+  text-align: center;
+  font: 600 0.8125rem/1.3 var(--sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: var(--hint, 1);
+}
+
 /* ---------- Marquee ---------- */
 
 .marquee {
@@ -496,6 +571,7 @@ h2 {
   .marquee-track { animation: marquee 48s linear infinite; }
   .marquee:hover .marquee-track { animation-play-state: paused; }
 }
+.js-motion .marquee-track { animation: none; will-change: transform; }
 @keyframes marquee {
   to { transform: translateX(-50%); }
 }
@@ -663,241 +739,240 @@ h2 {
 .js-motion .build-item.is-active .build-name { transform: translateX(0.18em); }
 .js-motion .build-item.is-active .build-name .period { transform: scale(1.35); }
 
-/* ---------- How it works: the six steps ---------- */
+/* ---------- How it works: one drawing evolves through six steps ---------- */
 
-.steps {
-  --dot: 26px;
-  --loop-top: 18px;
-  --step-top: 64px;
-  list-style: none;
+.steps-layout {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  margin-top: clamp(56px, 7vw, 96px);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-rows: auto 1fr auto;
+  column-gap: var(--col-gap);
+  row-gap: 24px;
 }
+.steps-head { grid-column: 1 / -1; grid-row: 1; }
+.steps-head h2 { margin-top: 16px; }
 
-.step {
-  position: relative;
-  padding: var(--step-top) clamp(16px, 1.8vw, 28px) 0 0;
+.steps-list {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px var(--col-gap);
+  margin-top: clamp(32px, 4vw, 56px);
+  list-style: none;
 }
-
-/* Connecting track between dots; --seg (0–1) fills it with vermilion as you scroll. */
-.step::after {
-  content: "";
-  position: absolute;
-  top: calc(var(--step-top) + var(--dot) / 2 - 0.75px);
-  left: var(--dot);
-  right: 0;
-  height: 1.5px;
-  background: linear-gradient(90deg, var(--accent) calc(var(--seg, 0) * 100%), var(--rule) 0);
-}
-.step:last-child::after { display: none; }
-
-/* Each dot fills a little more — the last one is a full stop. */
-@property --fill {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 1;
-}
-
-.step-dot {
-  --fill: var(--p);
-  position: relative;
-  z-index: 1;
+.sl-num {
   display: block;
-  width: var(--dot);
-  height: var(--dot);
-  border-radius: 50%;
-  background: conic-gradient(var(--accent) calc(var(--fill) * 1turn), var(--paper) 0);
-  box-shadow: inset 0 0 0 1.5px var(--ink);
-}
-.step:last-child .step-dot { box-shadow: none; }
-
-/* Scroll-driven progress (main.js toggles .is-reached and sets --seg). */
-.js-motion .step-dot {
-  transition: --fill 0.7s cubic-bezier(0.3, 0.7, 0.3, 1), transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.js-motion .step:not(.is-reached) .step-dot { --fill: 0; }
-.js-motion .step:last-child:not(.is-reached) .step-dot { box-shadow: inset 0 0 0 1.5px var(--ink); }
-.js-motion .step.is-reached .step-dot { animation: dot-pop 0.45s ease; }
-.js-motion .step-body { transition: opacity 0.5s ease, transform 0.5s ease; }
-.js-motion .step:not(.is-reached) .step-body { opacity: 0.35; transform: translateY(6px); }
-
-.step:hover .step-dot { transform: scale(1.25); }
-
-@keyframes dot-pop {
-  50% { transform: scale(1.3); }
-}
-
-.step-body { margin-top: 28px; }
-
-.step-num {
-  display: block;
-  font: 600 0.8125rem/1 var(--sans);
-  letter-spacing: 0.08em;
-  color: var(--muted);
+  font: 600 0.875rem/1 var(--sans);
+  letter-spacing: 0.1em;
+  color: var(--accent-deep);
   font-variant-numeric: tabular-nums;
 }
-
-.step-title {
+.sl-item h3 {
   margin-top: 12px;
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(1.5rem, 2.1vw, 2rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  font-variation-settings: "opsz" 48;
+  font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 60;
   text-wrap: balance;
 }
-
-.step-body p {
-  margin-top: 10px;
-  font-size: 0.9688rem;
-  line-height: 1.45;
+.sl-item p {
+  margin-top: 12px;
+  font-size: 1.0625rem;
   color: var(--ink-soft);
 }
 
-/* The build → test → improve loop, drawn above the dots (desktop). */
-.loop {
-  position: absolute;
-  top: var(--loop-top);
-  border: 0 solid var(--accent);
-  pointer-events: none;
+.steps-art, .rail { display: none; }
+
+/* Pinned version */
+.js-motion .scene-steps { height: 560vh; border-top: 0; }
+.js-motion .steps-layout {
+  height: 100%;
+  padding-block: clamp(20px, 4vh, 48px);
 }
-.loop-start {
-  left: calc(var(--dot) / 2 - 0.75px);
-  right: 0;
-  height: calc(var(--step-top) - var(--loop-top) - 8px);
-  border-top-width: 1.5px;
-  border-left-width: 1.5px;
-  border-top-left-radius: 14px;
+.js-motion .steps-head { grid-column: 1; }
+.js-motion .steps-head h2 { font-size: clamp(2rem, 3.4vw, 3.25rem); }
+
+.js-motion .steps-list {
+  grid-column: 1;
+  grid-template-columns: minmax(0, 1fr);
+  align-self: center;
+  gap: 0;
+  margin-top: 0;
 }
-.loop-start::after {           /* arrowhead pointing down into step 3 */
+.js-motion .sl-item {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.45s ease, transform 0.7s var(--ease-out);
+}
+.js-motion .sl-item.is-past { transform: translateY(-48px); }
+.js-motion .sl-item.is-active { opacity: 1; transform: none; }
+.js-motion .sl-item h3 { font-size: clamp(2.75rem, 5.4vw, 5.5rem); line-height: 0.95; }
+.js-motion .sl-item p { margin-top: 20px; font-size: clamp(1.125rem, 1.6vw, 1.5rem); }
+
+.js-motion .steps-art {
+  display: block;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  max-width: min(100%, 62vh);
+  aspect-ratio: 1;
+  background-color: var(--paper-deep);
+  background-image: radial-gradient(circle, rgba(22, 19, 15, 0.16) 1px, transparent 1.4px);
+  background-size: 20px 20px;
+  background-position: 10px 10px;
+}
+
+.journey { display: block; width: 100%; height: 100%; }
+.journey .s,
+.journey .sa {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.journey .sa { stroke: var(--accent); }
+.journey .thin { stroke-width: 2; }
+.journey .dash { stroke-dasharray: 8 9; }
+.journey .f { fill: var(--accent); }
+.journey .beam { fill: rgba(214, 58, 31, 0.1); }
+.journey .screen { fill: var(--paper); opacity: 0; transition: opacity 0.6s ease; }
+[data-step="6"] .journey .screen { opacity: 1; }
+.journey .q {
+  font: 500 46px var(--serif);
+  fill: var(--accent);
+  text-anchor: middle;
+}
+
+/* Every layer starts hidden; data-step on the section decides what shows. */
+.journey > g,
+.journey .j-dot {
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.9s var(--ease-out);
+}
+.journey .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.2s var(--ease-out);
+}
+.journey .j-btn {
+  fill: transparent;
+  stroke: var(--ink);
+  stroke-width: 3;
+  transition: fill 0.5s ease, stroke 0.5s ease;
+}
+.journey .j-person { transform: translate(200px, 430px); }
+.journey .j-person .head { transition: fill 0.5s ease, stroke 0.5s ease; }
+.journey .j-marks,
+.journey .j-dot {
+  transform: scale(0.4);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.journey .j-loop { transform-origin: 240px 200px; }
+.journey .j-dot { fill: var(--accent); }
+
+/* 1 — Find a need: people, one of them with a problem */
+[data-step="1"] .j-need,
+[data-step="1"] .j-person { opacity: 1; }
+[data-step="1"] .p1 { transform: translate(130px, 250px); }
+[data-step="1"] .p2 { transform: translate(200px, 215px); }
+[data-step="1"] .p3 { transform: translate(270px, 250px); }
+[data-step="1"] .p2 .head { fill: var(--accent); stroke: var(--accent); }
+
+/* 2 — Plan a small test: a test card and a dashed sketch */
+[data-step="2"] .j-plan,
+[data-step="2"] .j-sketch,
+[data-step="3"] .j-sketch { opacity: 1; }
+
+/* 3+ — Build: the sketch draws itself solid */
+[data-step="3"] .j-phone, [data-step="4"] .j-phone,
+[data-step="5"] .j-phone, [data-step="6"] .j-phone { opacity: 1; }
+[data-step="3"] .j-phone .draw, [data-step="4"] .j-phone .draw,
+[data-step="5"] .j-phone .draw, [data-step="6"] .j-phone .draw { stroke-dashoffset: 0; }
+
+/* 4 — Test it: people try it and react */
+[data-step="4"] .j-person,
+[data-step="4"] .j-marks { opacity: 1; }
+[data-step="4"] .j-marks { transform: none; transition-delay: 0.4s; }
+[data-step="4"] .p1 { transform: translate(90px, 140px); }
+[data-step="4"] .p2 { transform: translate(70px, 215px); }
+[data-step="4"] .p3 { transform: translate(90px, 290px); }
+
+/* 5 — Improve: the loop spins, the button gets fixed */
+[data-step="5"] .j-loop { opacity: 1; animation: spin 7s linear infinite; }
+[data-step="5"] .j-btn,
+[data-step="6"] .j-btn { fill: var(--accent); stroke: var(--accent); }
+
+/* 6 — Share: on stage, with an audience, and a full stop */
+[data-step="6"] .j-beam,
+[data-step="6"] .j-person { opacity: 1; }
+[data-step="6"] .j-dot { opacity: 1; transform: none; transition-delay: 0.5s; transition-timing-function: ease, cubic-bezier(0.3, 1.6, 0.5, 1); }
+[data-step="6"] .p1 { transform: translate(170px, 372px); }
+[data-step="6"] .p2 { transform: translate(240px, 376px); }
+[data-step="6"] .p3 { transform: translate(310px, 372px); }
+
+/* Progress rail */
+.js-motion .rail {
+  --rail: 0;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  position: relative;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  list-style: none;
+}
+.js-motion .rail::before,
+.js-motion .rail::after {
   content: "";
   position: absolute;
-  left: -5.75px;
-  bottom: -7px;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 7px solid var(--accent);
+  top: 10px;
+  left: 11px;
+  right: calc(100% / 6 - 11px);
+  height: 1.5px;
+  background: var(--rule);
 }
-.loop-mid {
-  left: 0;
-  right: 0;
-  border-top-width: 1.5px;
+.js-motion .rail::after {
+  background: var(--accent);
+  transform: scaleX(var(--rail));
+  transform-origin: left center;
 }
-.loop-end {
-  left: 0;
-  width: calc(var(--dot) / 2 + 0.75px);
-  height: calc(var(--step-top) - var(--loop-top) - 4px);
-  border-top-width: 1.5px;
-  border-right-width: 1.5px;
-  border-top-right-radius: 10px;
+.rail li { position: relative; z-index: 1; }
+
+@property --fill {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 
-/* The loop draws itself backwards — Improve → Test → Build — once step 5 is reached. */
-.js-motion .loop {
-  clip-path: inset(-12px -12px -12px -12px);
-  transition: clip-path 0.45s ease-in-out;
+.rail-dot {
+  --fill: 0;
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) calc(var(--fill) * 1turn), var(--paper) 0);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  transition: --fill 0.6s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
-.js-motion .loop-mid  { transition-delay: 0.35s; }
-.js-motion .loop-start { transition-delay: 0.7s; }
-.js-motion .steps:not(.is-looping) .loop {
-  clip-path: inset(-12px -12px -12px calc(100% + 12px));
-  transition-delay: 0s;
-}
-.js-motion .loop-label { transition: opacity 0.4s ease 0.6s; }
-.js-motion .steps:not(.is-looping) .loop-label { opacity: 0; transition-delay: 0s; }
-
-.loop-label {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -55%);
-  padding: 0 10px;
-  background: var(--paper);
+.rail li.is-reached .rail-dot { --fill: var(--p); }
+.rail li:last-child.is-reached .rail-dot { box-shadow: none; }
+.rail li.is-current .rail-dot { transform: scale(1.2); }
+.rail-label {
+  display: block;
+  margin-top: 10px;
   font: 600 0.75rem/1 var(--sans);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-deep);
-  white-space: nowrap;
+  color: var(--muted);
+  transition: color 0.3s ease;
 }
-
-/* Vertical timeline below 1000px */
-@media (max-width: 999px) {
-  .steps {
-    grid-template-columns: minmax(0, 1fr);
-    max-width: 640px;
-  }
-
-  .step {
-    display: grid;
-    grid-template-columns: var(--dot) minmax(0, 1fr);
-    column-gap: 20px;
-    padding: 0 64px 40px 0;
-  }
-  .step:last-child { padding-bottom: 0; }
-
-  .step::after {
-    top: var(--dot);
-    left: calc(var(--dot) / 2 - 0.75px);
-    right: auto;
-    bottom: 0;
-    width: 1.5px;
-    height: auto;
-    background: linear-gradient(180deg, var(--accent) calc(var(--seg, 0) * 100%), var(--rule) 0);
-  }
-
-  .step-body { margin-top: 0; }
-  .step-num { line-height: var(--dot); }
-  .step-title { margin-top: 4px; }
-
-  .loop { top: auto; left: auto; right: 16px; width: 26px; }
-  .loop-start {
-    top: calc(var(--dot) / 2 - 0.75px);
-    bottom: 0;
-    height: auto;
-    border-left-width: 0;
-    border-right-width: 1.5px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 14px;
-  }
-  .loop-start::after {         /* arrowhead pointing left, toward step 3 */
-    left: -7px;
-    top: -5.75px;
-    bottom: auto;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 0;
-    border-right: 7px solid var(--accent);
-  }
-  .loop-mid {
-    top: 0;
-    bottom: 0;
-    border-top-width: 0;
-    border-right-width: 1.5px;
-  }
-  .loop-end {
-    top: 0;
-    height: calc(var(--dot) / 2 + 0.75px);
-    border-top-width: 0;
-    border-bottom-width: 1.5px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 14px;
-  }
-  .loop-label {
-    left: auto;
-    right: -9px;
-    top: 50%;
-    transform: translateY(-50%) rotate(180deg);
-    writing-mode: vertical-rl;
-    padding: 10px 0;
-  }
-
-  /* Vertical loop draws bottom-up: Improve → Test → Build. */
-  .js-motion .steps:not(.is-looping) .loop {
-    clip-path: inset(calc(100% + 12px) -12px -12px -12px);
-  }
-}
+.rail li.is-current .rail-label { color: var(--ink); }
 
 /* ---------- Inside the club: the board ---------- */
 
@@ -984,21 +1059,27 @@ h2 {
 }
 .js-motion .board-item.is-visible .icon .a { transform: none; }
 
-/* ---------- Who it's for ---------- */
+/* ---------- Who it's for: three starting points ---------- */
 
-.paths {
+.scene-who .scene-sticky {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.quotes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: clamp(56px, 7vw, 88px);
   border-top: 1px solid var(--ink);
   list-style: none;
 }
-.path { padding: 32px clamp(20px, 3vw, 40px) 0 0; }
-.path + .path {
+.quote { padding: 32px clamp(20px, 3vw, 40px) 0 0; }
+.quote + .quote {
   padding-left: clamp(20px, 3vw, 40px);
   border-left: 1px solid var(--rule);
 }
-.path-q {
+.quote-q {
   font-family: var(--serif);
   font-style: italic;
   font-size: clamp(1.75rem, 3vw, 2.75rem);
@@ -1007,11 +1088,77 @@ h2 {
   font-variation-settings: "opsz" 60;
   text-wrap: balance;
 }
-.path p:not(.path-q) {
+.quote-a {
   margin-top: 18px;
   font-weight: 500;
   color: var(--ink-soft);
 }
+.quote-a::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+.quote-count { display: none; }
+
+/* Pinned: one big quote at a time, typed out as you scroll. */
+.js-motion .scene-who { height: 330vh; }
+.js-motion .scene-who .scene-sticky {
+  display: grid;
+  place-items: center;
+  max-width: none;
+  padding-inline: 0;
+}
+.js-motion .quotes {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+  border-top: 0;
+}
+.js-motion .quote,
+.js-motion .quote + .quote {
+  grid-area: 1 / 1;
+  padding: 0;
+  border: 0;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.js-motion .quote.is-active { opacity: 1; }
+.js-motion .quote-q {
+  font-size: clamp(2.75rem, 7.6vw, 7.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 72;
+}
+.js-motion .quote-q .c { opacity: 0.12; transition: opacity 0.18s ease; }
+.js-motion .quote-q .c.on { opacity: 1; }
+.js-motion .quote-a {
+  margin-top: 32px;
+  font-size: clamp(1.125rem, 1.8vw, 1.5rem);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.6s var(--ease-out);
+}
+.js-motion .quote.show-a .quote-a { opacity: 1; transform: none; }
+.js-motion .quote-count {
+  display: block;
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  font: 600 0.8125rem/1 var(--sans);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.quote-count span { color: var(--ink); }
 
 .ask {
   display: grid;
@@ -1022,6 +1169,7 @@ h2 {
   padding: clamp(28px, 4vw, 44px) 0;
   border-block: 1px solid var(--rule);
 }
+.js-motion .ask { margin-top: 0; }
 .ask .kicker { grid-column: 1 / 4; padding-top: 0.9em; }
 .ask-text {
   grid-column: 4 / 13;
@@ -1301,15 +1449,28 @@ h2 {
 @media (max-width: 760px) {
   .hero-foot { grid-template-columns: minmax(0, 1fr); }
 
-  .paths { grid-template-columns: minmax(0, 1fr); border-top: 0; }
-  .path,
-  .path + .path {
+  .steps-list { grid-template-columns: minmax(0, 1fr); }
+  .js-motion .steps-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    row-gap: 16px;
+  }
+  .js-motion .steps-head h2 { font-size: clamp(1.75rem, 7vw, 2.25rem); }
+  .js-motion .steps-art { grid-column: 1; grid-row: 2; max-width: min(100%, 36svh); }
+  .js-motion .steps-list { grid-row: 3; align-self: start; }
+  .js-motion .rail { grid-row: 4; }
+  .js-motion .sl-item h3 { font-size: clamp(2.25rem, 10vw, 3rem); }
+  .js-motion .sl-item p { margin-top: 12px; }
+  .rail-label { display: none; }
+
+  .quotes { grid-template-columns: minmax(0, 1fr); border-top: 0; }
+  .quote,
+  .quote + .quote {
     padding: 28px 0;
     border-left: 0;
     border-top: 1px solid var(--rule);
   }
-  .path:first-child { border-top-color: var(--ink); }
-  .path:last-child { padding-bottom: 0; }
+  .quote:first-child { border-top-color: var(--ink); }
 
   .meeting-item,
   .meeting-item:first-child,

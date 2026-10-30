@@ -5,6 +5,7 @@
   var meeting = cfg.meeting || {};
   var root = document.documentElement;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var motion = !reduceMotion && "IntersectionObserver" in window;
 
   function all(selector, scope) {
     return Array.prototype.slice.call((scope || document).querySelectorAll(selector));
@@ -13,6 +14,9 @@
   function trim(value) {
     return typeof value === "string" ? value.trim() : "";
   }
+
+  function clamp01(n) { return Math.min(1, Math.max(0, n)); }
+  function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
 
   /* ---------- Apply config ---------- */
 
@@ -129,31 +133,156 @@
     });
   }
 
-  /* ---------- Scroll-linked: header rule, reading progress, step progress ---------- */
+  /* ---------- Motion switch ---------- */
+
+  if (motion) root.classList.add("js-motion");
+
+  // Wrap each word (or character) in a span so it can be revealed on its own.
+  // Character splits keep an untouched copy for screen readers.
+  function splitText(el, mode) {
+    var pieces = [];
+    var label = null;
+    if (mode === "chars") {
+      label = document.createElement("span");
+      label.className = "visually-hidden";
+      label.textContent = el.textContent;
+    }
+    (function walk(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+        if (child.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          var parts = mode === "chars" ? child.textContent.split("") : child.textContent.split(/(\s+)/);
+          parts.forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) {
+              frag.appendChild(document.createTextNode(part));
+              return;
+            }
+            var span = document.createElement("span");
+            span.className = mode === "chars" ? "c" : "w";
+            span.textContent = part;
+            pieces.push(span);
+            frag.appendChild(span);
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1) {
+          walk(child);
+        }
+      });
+    })(el);
+    if (label) {
+      var visual = document.createElement("span");
+      visual.setAttribute("aria-hidden", "true");
+      while (el.firstChild) visual.appendChild(el.firstChild);
+      el.appendChild(label);
+      el.appendChild(visual);
+    }
+    return pieces;
+  }
+
+  /* ---------- Scroll engine: header, reading progress, scenes ---------- */
 
   var header = document.querySelector(".site-header");
   var progressBar = document.querySelector(".scroll-progress");
-  var stepsList = document.querySelector(".steps");
-  var stepItems = all(".step");
-  var verticalSteps = window.matchMedia("(max-width: 999px)");
+  var headerH = header.offsetHeight;
+  var scenes = [];
   var ticking = false;
 
-  function clamp01(n) { return Math.min(1, Math.max(0, n)); }
+  // 0 when a pinned scene's stage first sticks, 1 when it lets go.
+  function sceneProgress(el) {
+    var rect = el.getBoundingClientRect();
+    var travel = rect.height - (window.innerHeight - headerH);
+    return travel > 0 ? clamp01((headerH - rect.top) / travel) : 0;
+  }
 
-  // Dots fill as the six steps scroll through the viewport; reverses on the way back up.
-  function updateSteps() {
-    if (!stepsList || !root.classList.contains("js-motion")) return;
-    var rect = stepsList.getBoundingClientRect();
-    var vh = window.innerHeight;
-    var progress = verticalSteps.matches
-      ? (vh * 0.72 - rect.top) / rect.height
-      : (vh * 0.85 - rect.top) / (vh * 0.45);
-    var reached = clamp01(progress) * stepItems.length;
-    stepItems.forEach(function (step, i) {
-      step.classList.toggle("is-reached", reached > i + 0.15);
-      step.style.setProperty("--seg", clamp01(reached - i - 0.15).toFixed(3));
+  // Scene: an idea's three dots merge into one vermilion dot that fills the screen.
+  var dotScene = document.querySelector(".scene-dot");
+  if (motion && dotScene) {
+    var dotFill = dotScene.querySelector(".dot-fill");
+    var dotWords = splitText(dotScene.querySelector(".dot-title"), "words");
+    var cover = 1;
+    var measureDot = function () {
+      cover = Math.hypot(window.innerWidth, window.innerHeight) / 28 + 2;
+    };
+    measureDot();
+    window.addEventListener("resize", measureDot);
+
+    scenes.push(function () {
+      var p = sceneProgress(dotScene);
+      var merge = easeInOut(clamp01(p / 0.16));
+      var grow = easeInOut(clamp01((p - 0.17) / 0.33));
+      var shown = clamp01((p - 0.52) / 0.36) * dotWords.length;
+      dotScene.style.setProperty("--conv", merge.toFixed(3));
+      dotScene.style.setProperty("--hint", (1 - clamp01((p - 0.03) / 0.08)).toFixed(3));
+      dotFill.style.opacity = merge >= 1 ? "1" : "0";
+      dotFill.style.transform = "scale(" + (1 + grow * (cover - 1)).toFixed(2) + ")";
+      dotWords.forEach(function (word, i) {
+        word.style.opacity = (0.14 + 0.86 * clamp01(shown - i)).toFixed(2);
+      });
     });
-    stepsList.classList.toggle("is-looping", reached > 4.15);
+  }
+
+  // Scene: the six steps, one at a time, with a drawing that evolves alongside.
+  var stepsScene = document.querySelector(".scene-steps");
+  if (motion && stepsScene) {
+    var stepItems = all(".sl-item", stepsScene);
+    var railItems = all(".rail li", stepsScene);
+    var rail = stepsScene.querySelector(".rail");
+    var currentStep = -1;
+
+    scenes.push(function () {
+      var p = sceneProgress(stepsScene);
+      var idx = Math.min(stepItems.length - 1, Math.floor(p * stepItems.length));
+      rail.style.setProperty("--rail", clamp01((p * stepItems.length - 0.3) / (stepItems.length - 1)).toFixed(3));
+      if (idx === currentStep) return;
+      currentStep = idx;
+      stepsScene.setAttribute("data-step", idx + 1);
+      stepItems.forEach(function (li, i) {
+        li.classList.toggle("is-active", i === idx);
+        li.classList.toggle("is-past", i < idx);
+      });
+      railItems.forEach(function (li, i) {
+        li.classList.toggle("is-reached", i <= idx);
+        li.classList.toggle("is-current", i === idx);
+      });
+    });
+  }
+
+  // Scene: each starting point types itself out, then its answer appears.
+  var whoScene = document.querySelector(".scene-who");
+  if (motion && whoScene) {
+    var quotes = all(".quote", whoScene).map(function (el) {
+      return { el: el, chars: splitText(el.querySelector(".quote-q"), "chars") };
+    });
+    var quoteCount = whoScene.querySelector(".quote-count span");
+
+    scenes.push(function () {
+      var p = sceneProgress(whoScene);
+      var seg = Math.min(quotes.length - 1, Math.floor(p * quotes.length));
+      var local = clamp01(p * quotes.length - seg);
+      quotes.forEach(function (q, i) {
+        var typed = i < seg ? q.chars.length : i > seg ? 0 : Math.round(clamp01(local / 0.45) * q.chars.length);
+        q.el.classList.toggle("is-active", i === seg);
+        q.el.classList.toggle("show-a", i < seg || (i === seg && local > 0.5));
+        q.chars.forEach(function (c, j) { c.classList.toggle("on", j < typed); });
+      });
+      if (quoteCount) quoteCount.textContent = seg + 1;
+    });
+  }
+
+  // Statements that light up word by word as they cross the screen.
+  if (motion) {
+    all("[data-words]").forEach(function (el) {
+      var words = splitText(el, "words");
+      scenes.push(function () {
+        var vh = window.innerHeight;
+        var p = clamp01((vh * 0.85 - el.getBoundingClientRect().top) / (vh * 0.45));
+        var shown = p * words.length;
+        words.forEach(function (word, i) {
+          word.style.opacity = (0.2 + 0.8 * clamp01(shown - i)).toFixed(2);
+        });
+      });
+    });
   }
 
   function onScroll() {
@@ -161,7 +290,7 @@
     var max = document.documentElement.scrollHeight - window.innerHeight;
     header.classList.toggle("is-scrolled", y > 40);
     if (progressBar) progressBar.style.setProperty("--scroll", max > 0 ? (y / max).toFixed(4) : 0);
-    updateSteps();
+    scenes.forEach(function (update) { update(); });
     ticking = false;
   }
 
@@ -173,12 +302,13 @@
   }
 
   window.addEventListener("scroll", requestTick, { passive: true });
-  window.addEventListener("resize", requestTick);
+  window.addEventListener("resize", function () {
+    headerH = header.offsetHeight;
+    requestTick();
+  });
+  onScroll();
 
-  if (!("IntersectionObserver" in window)) {
-    onScroll();
-    return;
-  }
+  if (!("IntersectionObserver" in window)) return;
 
   /* ---------- "What you could build": the item in focus ---------- */
 
@@ -204,20 +334,48 @@
     });
   }
 
-  /* ---------- Motion (skipped entirely with reduced motion) ---------- */
+  if (!motion) return;
 
-  if (reduceMotion) {
-    onScroll();
-    return;
+  /* ---------- Marquee: drifts on its own, races and reverses with your scroll ---------- */
+
+  var track = document.querySelector(".marquee-track");
+  if (track) {
+    var mx = 0;
+    var velocity = 0;
+    var direction = 1;
+    var lastY = window.scrollY;
+    var marqueeVisible = false;
+
+    var spin = function () {
+      if (!marqueeVisible) return;
+      var y = window.scrollY;
+      velocity = velocity * 0.9 + (y - lastY) * 0.1;
+      lastY = y;
+      if (Math.abs(velocity) > 0.3) direction = velocity > 0 ? 1 : -1;
+      mx -= direction * (0.6 + Math.min(Math.abs(velocity) * 0.8, 18));
+      var half = track.scrollWidth / 2;
+      if (mx <= -half) mx += half;
+      else if (mx > 0) mx -= half;
+      track.style.transform = "translate3d(" + mx.toFixed(1) + "px, 0, 0)";
+      window.requestAnimationFrame(spin);
+    };
+
+    new IntersectionObserver(function (entries) {
+      var wasVisible = marqueeVisible;
+      marqueeVisible = entries[0].isIntersecting;
+      if (marqueeVisible && !wasVisible) {
+        lastY = window.scrollY;
+        window.requestAnimationFrame(spin);
+      }
+    }).observe(track.parentNode);
   }
-  root.classList.add("js-motion");
-  onScroll();
 
-  // Reveal on scroll; siblings in lists arrive one after another.
-  var revealTargets = all(".section-head, .what-head, .stage, .build-list, .board-title, .board-item, .path, .ask, .photo-strip figure, .meeting-item, .join-steps li, .partners");
+  /* ---------- Reveal on scroll; siblings in lists arrive one after another ---------- */
+
+  var revealTargets = all(".section-head, .what-head, .stage, .build-list, .board-title, .board-item, .ask, .photo-strip figure, .meeting-item, .join-steps li, .partners");
   revealTargets.forEach(function (el) {
     el.classList.add("reveal");
-    if (el.matches(".board-item, .path, .photo-strip figure, .meeting-item, .join-steps li")) {
+    if (el.matches(".board-item, .photo-strip figure, .meeting-item, .join-steps li")) {
       var index = Array.prototype.indexOf.call(el.parentNode.children, el);
       el.style.setProperty("--delay", (index * 0.09).toFixed(2) + "s");
     }
