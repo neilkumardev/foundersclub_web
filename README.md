@@ -4,6 +4,7 @@ A static one-page site for Founders Club at Bellevue High School. No build step 
 
 ```
 index.html    page content and copy
+serve.py      local preview server (no caching)
 styles.css    identity, layout, motion
 config.js     editable club details (join link, email, meeting info, Instagram)
 main.js       applies config, mobile menu, scroll and hover animations
@@ -15,10 +16,14 @@ favicon.svg   vermilion dot
 From this folder:
 
 ```bash
-python3 -m http.server 4173
+python3 serve.py
 ```
 
-Then open http://localhost:4173. Opening `index.html` directly also works. If an edit doesn't show up, hard-refresh (Cmd+Shift+R), because the browser may be holding an old copy of `styles.css`.
+Then open http://localhost:4173. This server turns off browser caching, so edits always show up on reload. (Plain `python3 -m http.server` lets the browser keep old copies of `styles.css`, which makes the page look broken after an update.)
+
+## Publishing an update
+
+`index.html` loads `styles.css?v=3`, `config.js?v=3` and `main.js?v=3`. When you change any of those files, bump the number (for example to `?v=4`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
 
 ## Edit club details
 
