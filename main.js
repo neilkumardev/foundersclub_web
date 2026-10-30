@@ -248,6 +248,61 @@
     });
   }
 
+  // Scene: one project type at a time in the middle of the screen. The index
+  // along the bottom fills as you scroll and jumps to a type when clicked; the
+  // name drifts slightly with the cursor.
+  var buildScene = document.querySelector(".scene-build");
+  if (motion && buildScene) {
+    var buildItems = all(".build-item", buildScene);
+    var buildLayout = buildScene.querySelector(".build-layout");
+    var buildIndex = buildScene.querySelector("[data-build-index]");
+    var currentBuild = -1;
+
+    var buildButtons = buildItems.map(function (item, i) {
+      var name = item.querySelector(".build-name").textContent.replace(/^an? /i, "").replace(/\.$/, "");
+      var button = document.createElement("button");
+      button.type = "button";
+      button.textContent = name;
+      button.setAttribute("aria-label", "Show " + name);
+      button.addEventListener("click", function () {
+        var rect = buildScene.getBoundingClientRect();
+        var travel = rect.height - (window.innerHeight - headerH);
+        var p = (i + 0.2) / buildItems.length;
+        window.scrollTo({ top: window.scrollY + rect.top - headerH + p * travel, behavior: "smooth" });
+      });
+      buildIndex.appendChild(button);
+      return button;
+    });
+
+    scenes.push(function () {
+      var p = sceneProgress(buildScene);
+      var n = buildItems.length;
+      var idx = Math.min(n - 1, Math.floor(p * n));
+      var local = clamp01(p * n - idx);
+      buildButtons.forEach(function (button, i) {
+        button.style.setProperty("--seg", i < idx ? 1 : i > idx ? 0 : local.toFixed(3));
+      });
+      if (idx === currentBuild) return;
+      currentBuild = idx;
+      buildItems.forEach(function (item, i) {
+        item.classList.toggle("is-active", i === idx);
+        item.classList.toggle("is-past", i < idx);
+      });
+      buildButtons.forEach(function (button, i) { button.setAttribute("aria-current", i === idx ? "true" : "false"); });
+    });
+
+    buildLayout.addEventListener("pointermove", function (e) {
+      if (e.pointerType !== "mouse") return;
+      var r = buildLayout.getBoundingClientRect();
+      buildLayout.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+      buildLayout.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+    });
+    buildLayout.addEventListener("pointerleave", function () {
+      buildLayout.style.setProperty("--mx", "0");
+      buildLayout.style.setProperty("--my", "0");
+    });
+  }
+
   // Scene: each starting point types itself out, then its answer appears.
   var whoScene = document.querySelector(".scene-who");
   if (motion && whoScene) {
@@ -310,7 +365,7 @@
 
   if (!("IntersectionObserver" in window)) return;
 
-  /* ---------- "What you could build": the item in focus ---------- */
+  /* ---------- "What you could build" without motion: the item in focus ---------- */
 
   var items = all(".build-item");
   var illustrations = all(".ill");
@@ -321,7 +376,7 @@
     illustrations.forEach(function (ill, i) { ill.classList.toggle("is-active", i === index); });
     if (stageNum) stageNum.textContent = String(index + 1).padStart(2, "0");
   }
-  if (items.length) {
+  if (items.length && !(motion && buildScene)) {
     setActive(items[0]);
     var focusObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -372,7 +427,7 @@
 
   /* ---------- Reveal on scroll; siblings in lists arrive one after another ---------- */
 
-  var revealTargets = all(".section-head, .what-head, .stage, .build-list, .board-title, .board-item, .ask, .photo-strip figure, .meeting-item, .join-steps li, .partners");
+  var revealTargets = all(".section-head, .what-head, .board-title, .board-item, .ask, .photo-strip figure, .meeting-item, .join-steps li, .partners");
   revealTargets.forEach(function (el) {
     el.classList.add("reveal");
     if (el.matches(".board-item, .photo-strip figure, .meeting-item, .join-steps li")) {

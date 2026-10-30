@@ -23,7 +23,7 @@ Then open http://localhost:4173. This server turns off browser caching, so edits
 
 ## Publishing an update
 
-`index.html` loads `styles.css?v=3`, `config.js?v=3` and `main.js?v=3`. When you change any of those files, bump the number (for example to `?v=4`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
+`index.html` loads `styles.css?v=4`, `config.js?v=4` and `main.js?v=4`. When you change any of those files, bump the number (for example to `?v=5`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
 
 ## Edit club details
 
@@ -46,7 +46,7 @@ It's a static folder, so any static host works: GitHub Pages, Netlify, Vercel, C
 ## Motion and accessibility
 
 - Graphics are inline SVG line drawings in `index.html` (no image files). Each one ends in a vermilion dot.
-- Motion: the hero types in, a marquee lists what people build, the illustration for each project type draws itself as that type comes into focus, the six step dots and track fill as you scroll, the improve→build loop draws when step 5 is reached, icons draw in, sections reveal, buttons lean toward the cursor, and there's a reading-progress line under the header.
+- Motion: the hero types in, a marquee lists what people build, the project types take over the middle of the screen one at a time (the index along the bottom jumps between them), the six step dots and track fill as you scroll, the improve→build loop draws when step 5 is reached, icons draw in, sections reveal, buttons lean toward the cursor, and there's a reading-progress line under the header.
 - With `prefers-reduced-motion: reduce`, all of that is skipped and the page shows its finished state.
 - Without JavaScript, all content is visible and the menu shows as plain links.
 - Colours were checked for WCAG AA. Vermilion text is only used at large sizes; small accent text uses the deeper `--accent-deep`.

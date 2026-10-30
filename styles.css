@@ -112,6 +112,7 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
+  text-wrap: balance;
 }
 
 h2 {
@@ -323,12 +324,13 @@ h2 {
   margin-top: clamp(20px, 2.4vw, 32px);
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(3.1rem, 9.6vw, 8.5rem);
+  font-size: clamp(2.6rem, 9.6vw, 8.5rem);
   line-height: 0.94;
   letter-spacing: -0.035em;
   font-variation-settings: "opsz" 72;
 }
 .hero-title .line { display: block; }
+.hero-title .keep { white-space: nowrap; } /* the ellipsis never wraps onto its own line */
 .hero-title em { letter-spacing: -0.03em; }
 
 .ellipsis,
@@ -595,19 +597,19 @@ h2 {
 
 /* ---------- What we do: illustration stage + list ---------- */
 
-.what {
+.what-head h2 { margin-top: 18px; }
+.what-head .section-intro { max-width: 32ch; }
+
+.build-layout {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-areas:
-    "stage stage stage stage stage stage head head head head head head"
-    "stage stage stage stage stage stage list list list list list list";
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: "stage list";
   column-gap: var(--col-gap);
-  row-gap: 48px;
+  margin-top: 56px;
   align-items: start;
 }
 
-.what-head { grid-area: head; }
-.what-head h2 { margin-top: 18px; }
+.build-index { display: none; }
 
 .stage {
   grid-area: stage;
@@ -719,10 +721,11 @@ h2 {
 .build-name .period { color: inherit; transition: color 0.35s ease; }
 
 .build-note {
-  flex: none;
+  flex: 0 1 22ch;
   font-size: 0.9375rem;
   color: var(--muted);
   text-align: right;
+  text-wrap: balance;
   transition: color 0.35s ease;
 }
 
@@ -736,8 +739,111 @@ h2 {
   display: inline-block;
   transition: color 0.35s ease, transform 0.4s cubic-bezier(0.3, 1.8, 0.5, 1);
 }
-.js-motion .build-item.is-active .build-name { transform: translateX(0.18em); }
 .js-motion .build-item.is-active .build-name .period { transform: scale(1.35); }
+
+/* Pinned version: one type at a time fills the middle of the screen, and the
+   index along the bottom jumps between them. */
+.js-motion #what { padding-bottom: 0; }
+.js-motion .scene-build { height: 650vh; margin-top: clamp(48px, 6vw, 80px); }
+.js-motion .scene-build .scene-sticky { border-top: 1px solid var(--ink); }
+
+.js-motion .build-layout {
+  --mx: 0;
+  --my: 0;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "list" "index";
+  align-items: stretch;
+}
+.js-motion .scene-build .stage { display: none; }
+
+.js-motion .scene-build .build-list {
+  grid-area: list;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 0 var(--gutter);
+  border-top: 0;
+  text-align: center;
+}
+.js-motion .scene-build .build-item {
+  grid-area: 1 / 1;
+  display: block;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  transform: translateY(56px);
+  transition: opacity 0.45s ease, transform 0.7s var(--ease-out);
+}
+.js-motion .scene-build .build-item.is-past { transform: translateY(-56px); }
+.js-motion .scene-build .build-item.is-active { opacity: 1; transform: none; }
+.js-motion .scene-build .build-name {
+  display: block;
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 72;
+  color: var(--ink);
+  text-wrap: balance;
+  transform: translate(calc(var(--mx) * 6px), calc(var(--my) * 6px));
+}
+.js-motion .scene-build .build-note {
+  display: block;
+  max-width: 26ch;
+  margin: clamp(16px, 2vw, 28px) auto 0;
+  font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+  line-height: 1.35;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.js-motion .build-index {
+  grid-area: index;
+  display: flex;
+  gap: 6px;
+  padding: clamp(16px, 2.4vh, 24px) var(--gutter) clamp(20px, 3vh, 32px);
+  border-top: 1px solid var(--rule);
+}
+.build-index button {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 0 0;
+  border: 0;
+  background: none;
+  font: 600 0.6875rem/1.2 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+.build-index button::before,
+.build-index button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: var(--rule);
+}
+.build-index button::after {
+  background: var(--accent);
+  transform: scaleX(var(--seg, 0));
+  transform-origin: left;
+}
+.build-index button:hover,
+.build-index button[aria-current="true"] { color: var(--ink); }
+.build-index button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 4px; }
 
 /* ---------- How it works: one drawing evolves through six steps ---------- */
 
@@ -1403,10 +1509,11 @@ h2 {
   .section-head > div { grid-column: 1 / -1; }
   .section-head > .kicker { padding-top: 0; }
 
-  .what {
+  .build-layout {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "head" "stage" "list";
+    grid-template-areas: "stage" "list";
     row-gap: 32px;
+    margin-top: 32px;
   }
 
   /* On smaller screens the illustration rides along above the list. */
@@ -1427,6 +1534,7 @@ h2 {
     margin: 0;
   }
   .stage-caption { margin-top: 0; }
+  .build-index button { font-size: 0.625rem; letter-spacing: 0.04em; }
 
   .board { grid-template-columns: minmax(0, 1fr); border-top: 0; }
   .board-col,
@@ -1462,6 +1570,11 @@ h2 {
   .js-motion .sl-item h3 { font-size: clamp(2.25rem, 10vw, 3rem); }
   .js-motion .sl-item p { margin-top: 12px; }
   .rail-label { display: none; }
+
+  .js-motion .scene-build .build-note { margin-top: 12px; font-size: 1.0625rem; }
+  .build-index button { height: 32px; padding: 0; font-size: 0; }
+  .build-index button::before,
+  .build-index button::after { top: 14px; }
 
   .quotes { grid-template-columns: minmax(0, 1fr); border-top: 0; }
   .quote,
