@@ -466,7 +466,7 @@
 
   /* ---------- Reveal on scroll; siblings in lists arrive one after another ---------- */
 
-  var revealTargets = all(".section-head, .what-head, .board-title, .board-item, .ask, .photo-strip figure, .team-card, .meeting-item, .join-steps li, .partners");
+  var revealTargets = all(".section-head, .what-head, .board-title, .board-item, .ask, .project, .photo-strip figure, .team-card, .meeting-item, .join-steps li, .partners");
   revealTargets.forEach(function (el) {
     el.classList.add("reveal");
     if (el.matches(".board-item, .photo-strip figure, .team-card, .meeting-item, .join-steps li")) {

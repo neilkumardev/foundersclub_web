@@ -13,10 +13,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=12">
   <script>document.documentElement.className = "js";</script>
-  <script src="config.js?v=10" defer></script>
-  <script src="main.js?v=10" defer></script>
+  <script src="config.js?v=12" defer></script>
+  <script src="main.js?v=12" defer></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -42,6 +42,7 @@
           <span class="menu-toggle-icon" aria-hidden="true"></span>
         </button>
         <ul class="menu" id="site-menu">
+          <li><a href="#projects">Projects</a></li>
           <li><a href="#what">What we do</a></li>
           <li><a href="#how">How it works</a></li>
           <li><a href="#inside">Inside the club</a></li>
@@ -100,6 +101,102 @@
         <span>Startups</span><i></i><span><em>Apps</em></span><i></i><span>Nonprofits</span><i></i><span><em>Websites</em></span><i></i><span>Small businesses</span><i></i><span><em>Services</em></span><i></i><span>Side projects</span><i></i>
       </div>
     </div>
+
+    <!-- Projects: what members have built and launched -->
+    <section class="section projects" id="projects" aria-labelledby="projects-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">What we’ve built</p>
+          <div>
+            <h2 id="projects-title">Projects from our members.</h2>
+            <p class="section-intro">Members ship things people use. Here are three that schools, businesses and App Store users rely on today.</p>
+          </div>
+        </div>
+
+        <ul class="project-list">
+          <li class="project project-featured">
+            <a class="project-shot" href="https://tryfindit.com" target="_blank" rel="noopener">
+              <img src="images/projects/findit.jpg" alt="Three FindIt app screens from Odle Middle School: search results for water bottle, a black Hydro Flask with its AI-written description and a Claim button, and staff posting a found pink water bottle" width="1440" height="900" loading="lazy">
+            </a>
+            <div class="project-body">
+              <div class="project-intro">
+                <p class="kicker">AI lost and found</p>
+                <h3 class="project-name">FindIt AI</h3>
+                <p class="project-desc">A lost-and-found bin is a pile nobody wants to dig through, and a lot of what’s in it ends up in a landfill. With FindIt, staff take one photo of each item they find and the AI writes the description. If you lose something, you search in plain words, like “black Hydro Flask,” and claim it before you go pick it up.</p>
+                <p class="project-desc">Neil started building it at 14. A year later, the City of Bellevue funded a pilot at Bellevue College.</p>
+                <a class="text-link project-link" href="https://tryfindit.com" target="_blank" rel="noopener">tryfindit.com <span aria-hidden="true">↗</span></a>
+              </div>
+              <dl class="project-meta">
+                <div>
+                  <dt>Recognition</dt>
+                  <dd>
+                    <ul class="project-wins">
+                      <li>One of four projects the City of Bellevue funded through its <a class="inline-link" href="https://www.geekwire.com/2025/teen-finds-a-way-to-simplify-lost-and-found-with-an-app-that-uses-ai-in-the-search-process/" target="_blank" rel="noopener">Civic Innovation Challenge</a>, out of 23 applicants</li>
+                      <li>First pilot to launch at <a class="inline-link" href="https://www.bellevuecollege.edu/news/article/college-tests-new-ai-based-civic-innovation-apps/" target="_blank" rel="noopener">Bellevue College</a>, open to the public since December 2025</li>
+                      <li>Covered by <a class="inline-link" href="https://www.geekwire.com/2025/teen-finds-a-way-to-simplify-lost-and-found-with-an-app-that-uses-ai-in-the-search-process/" target="_blank" rel="noopener">GeekWire</a></li>
+                      <li>Top 300, Thermo Fisher Junior Innovators Challenge</li>
+                      <li>5.0 stars on the <a class="inline-link" href="https://apps.apple.com/us/app/findit-ai/id6746972916" target="_blank" rel="noopener">App Store</a></li>
+                    </ul>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Used at</dt>
+                  <dd>Bellevue College, schools across the Bellevue School District including Odle Middle School, Overlake Square Mall, Newport Hills Swim &amp; Tennis Club, Mary Wayte Pool and Coal Creek YMCA</dd>
+                </div>
+                <div>
+                  <dt>Built by</dt>
+                  <dd><a class="inline-link" href="https://www.linkedin.com/in/imneilkumar/" target="_blank" rel="noopener">Neil Kumar</a></dd>
+                </div>
+              </dl>
+            </div>
+          </li>
+
+          <li class="project">
+            <a class="project-shot" href="https://bhsdiscover.com" target="_blank" rel="noopener">
+              <img src="images/projects/bhsdiscover.jpg" alt="BHS Discover homepage: Find your club, with search and a club quiz" width="1440" height="900" loading="lazy">
+            </a>
+            <div class="project-body">
+              <p class="kicker">Club finder for Bellevue High</p>
+              <h3 class="project-name">BHS Discover</h3>
+              <p class="project-desc">Search all 60 clubs at Bellevue High, or answer eight questions and get five matches. Bellevue ASB uses it to help students find clubs, and it has more than 100 users.</p>
+              <dl class="project-meta">
+                <div>
+                  <dt>Used by</dt>
+                  <dd>Bellevue High ASB</dd>
+                </div>
+                <div>
+                  <dt>Built by</dt>
+                  <dd>Hugo Kim and Arham Bhandari</dd>
+                </div>
+              </dl>
+              <a class="text-link project-link" href="https://bhsdiscover.com" target="_blank" rel="noopener">bhsdiscover.com <span aria-hidden="true">↗</span></a>
+            </div>
+          </li>
+
+          <li class="project">
+            <a class="project-shot" href="https://apps.apple.com/us/app/piecewise-style-on-a-budget/id6827583705" target="_blank" rel="noopener">
+              <img src="images/projects/piecewise.jpg" alt="PieceWise App Store screenshots: scan what you own, set your own budget, know what to buy next" width="1440" height="900" loading="lazy">
+            </a>
+            <div class="project-body">
+              <p class="kicker">iPhone app</p>
+              <h3 class="project-name">PieceWise</h3>
+              <p class="project-desc">Take photos of the clothes you own and set a monthly budget. PieceWise tells you what to buy next, why, and which outfits you can already make.</p>
+              <dl class="project-meta">
+                <div>
+                  <dt>Status</dt>
+                  <dd>Live on the App Store, published through Hugo’s own company</dd>
+                </div>
+                <div>
+                  <dt>Built by</dt>
+                  <dd>Hugo Ng</dd>
+                </div>
+              </dl>
+              <a class="text-link project-link" href="https://apps.apple.com/us/app/piecewise-style-on-a-budget/id6827583705" target="_blank" rel="noopener">View on the App Store <span aria-hidden="true">↗</span></a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
 
     <!-- What we do -->
     <section class="section" id="what" aria-labelledby="what-title">
