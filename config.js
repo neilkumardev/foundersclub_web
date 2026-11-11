@@ -36,7 +36,7 @@ window.FC_CONFIG = {
     { name: "Hugo Kim", role: "Vice President", photo: "" },
     { name: "Ella Xu", role: "Secretary", photo: "images/board/ella-xu.jpg" },
     { name: "Ethan Chan", role: "Treasurer", photo: "" },
-    { name: "Harin Kim", role: "Social Media", photo: "" },
+    { name: "Harin Kim", role: "Social Media", photo: "images/board/harin-kim.jpg" },
     { name: "Lexi Kura", role: "Outreach", photo: "" },
     { name: "Hugo Ng", role: "Technology Lead", photo: "" },
   ],

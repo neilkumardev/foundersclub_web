@@ -23,7 +23,7 @@ Then open http://localhost:4173. This server turns off browser caching, so edits
 
 ## Publishing an update
 
-`index.html` loads `styles.css?v=9`, `config.js?v=9` and `main.js?v=9`. When you change any of those files, bump the number (for example to `?v=10`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
+`index.html` loads `styles.css?v=10`, `config.js?v=10` and `main.js?v=10`. When you change any of those files, bump the number (for example to `?v=11`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
 
 ## Edit club details
 
