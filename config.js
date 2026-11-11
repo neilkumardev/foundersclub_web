@@ -24,6 +24,23 @@ window.FC_CONFIG = {
   //   { src: "images/meeting-1.jpg", alt: "Two members testing an app prototype", caption: "" },
   photos: [],
 
+  // Board members, shown in this order in the "Board" section.
+  // Put headshots in images/board/ and set photo to the file path.
+  // Headshots are cropped to a 4:5 portrait. While photo is "" (or the file
+  // is missing), the card shows a blank tile.
+  // Leave role "" to hide it. The section stays hidden while this list is empty.
+  board: [
+    { name: "Neil Kumar", role: "Co-President", photo: "images/board/neil-kumar.jpg" },
+    { name: "Arham Bhandari", role: "Co-President", photo: "images/board/arham-bhandari.jpg" },
+    // No headshot yet: add images/board/<first-last>.jpg and set photo to it.
+    { name: "Hugo Kim", role: "Vice President", photo: "" },
+    { name: "Ella Xu", role: "Secretary", photo: "images/board/ella-xu.jpg" },
+    { name: "Ethan Chan", role: "Treasurer", photo: "" },
+    { name: "Harin Kim", role: "Social Media", photo: "" },
+    { name: "Lexi Kura", role: "Outreach", photo: "" },
+    { name: "Hugo Ng", role: "Technology Lead", photo: "" },
+  ],
+
   meeting: {
     cadence: "Every other Thursday",
     start: "3:30 p.m.",

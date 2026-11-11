@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Founders Club · Bellevue High School</title>
   <meta name="description" content="Founders Club is a student-run club at Bellevue High School for starting companies, apps, nonprofits and small businesses. No experience needed. We meet every other Thursday in Room 0108.">
-  <meta name="theme-color" content="#F5F1E8">
+  <meta name="theme-color" content="#0c2149">
   <meta property="og:title" content="Founders Club · Bellevue High School">
   <meta property="og:description" content="Start something before you graduate. A student-run club at Bellevue High.">
   <meta property="og:type" content="website">
@@ -13,10 +13,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=9">
   <script>document.documentElement.className = "js";</script>
-  <script src="config.js?v=4" defer></script>
-  <script src="main.js?v=4" defer></script>
+  <script src="config.js?v=9" defer></script>
+  <script src="main.js?v=9" defer></script>
 </head>
 <body id="top">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -46,6 +46,7 @@
           <li><a href="#how">How it works</a></li>
           <li><a href="#inside">Inside the club</a></li>
           <li><a href="#who">Who it’s for</a></li>
+          <li><a href="#team">Board</a></li>
           <li class="menu-join"><a class="btn btn-small" href="#join" data-join-cta>Join</a></li>
         </ul>
       </nav>
@@ -82,7 +83,7 @@
       </div>
     </section>
 
-    <!-- Scene: the idea's dots merge into one vermilion dot, which fills the screen -->
+    <!-- Scene: the idea's dots merge into one dot, which fills the screen -->
     <section class="scene scene-dot" aria-labelledby="dot-title">
       <div class="scene-sticky">
         <div class="dot-dots" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -400,6 +401,20 @@
           </div>
         </div>
         <div class="photo-strip" data-photo-strip></div>
+      </div>
+    </section>
+
+    <!-- Board: cards come from config.board; hidden while that list is empty -->
+    <section class="section team" id="team" aria-labelledby="team-title" hidden data-team>
+      <div class="wrap">
+        <div class="section-head">
+          <p class="kicker">Board</p>
+          <div>
+            <h2 id="team-title">Who runs the club.</h2>
+            <p class="section-intro">Students at Bellevue High, advised by <span data-config="meeting.host">Mr. Hong</span>. Find any of us at a meeting.</p>
+          </div>
+        </div>
+        <ul class="team-grid" data-team-grid></ul>
       </div>
     </section>
 

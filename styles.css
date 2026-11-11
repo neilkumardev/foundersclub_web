@@ -1,25 +1,26 @@
 /* ==========================================================================
    Founders Club — styles
-   Identity: warm paper, near-black ink, one vermilion accent.
-   The vermilion dot marks "this exists" — wordmark, hero, step 6,
-   and the finishing mark in every illustration.
+   Identity: Bellevue High colors. White page, black ink, blue accent,
+   navy for dark sections. The gold dot marks "this exists": wordmark,
+   hero, bullets, and the finishing mark in every illustration.
    ========================================================================== */
 
 :root {
-  --paper: #f5f1e8;
-  --paper-deep: #ece6da;
-  --ink: #16130f;
-  --ink-soft: #3d3832;
-  --muted: #665f55;
-  --faint: #8c8478;       /* large text only (≥3:1 on paper) */
-  --rule: #d6cebf;
-  --accent: #d63a1f;      /* vermilion: buttons, dots, large text */
-  --accent-deep: #ad2d16; /* vermilion for small text on paper */
+  --paper: #ffffff;
+  --paper-deep: #eef2f8;  /* cool tint for tiles and panels */
+  --ink: #0b0f19;
+  --ink-soft: #2b3240;
+  --muted: #556070;
+  --faint: #7d8797;       /* large text only (≥3:1 on white) */
+  --rule: #d9dfe8;
+  --accent: #1d4fa0;      /* Bellevue blue: buttons, links, progress, large text */
+  --accent-deep: #163d80; /* blue for small text and focus rings */
+  --gold: #e5a50a;        /* Bellevue gold: dots and marks; text only on navy */
 
-  --night: #16130f;
-  --night-text: #f5f1e8;
-  --night-muted: #b8afa1;
-  --night-rule: #3b362f;
+  --night: #0c2149;       /* navy: notice bar and the join section */
+  --night-text: #ffffff;
+  --night-muted: #b9c4d8;
+  --night-rule: #26396a;
 
   --serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -82,7 +83,7 @@ img { display: block; max-width: 100%; }
   padding-inline: var(--gutter);
 }
 
-.period { color: var(--accent); }
+.period { color: var(--gold); }
 
 .skip-link {
   position: absolute;
@@ -148,7 +149,7 @@ h2 {
   border-radius: 2px;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s var(--ease-out);
 }
-.btn:hover { background: var(--ink); }
+.btn:hover { background: var(--night); }
 .btn-arrow { display: inline-block; transition: transform 0.2s ease; }
 .btn:hover .btn-arrow { transform: translateX(3px); }
 
@@ -177,8 +178,8 @@ h2 {
 /* ---------- Notice bar ---------- */
 
 .notice {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--night);
+  color: var(--night-text);
   font-size: 0.875rem;
   text-align: center;
 }
@@ -191,7 +192,7 @@ h2 {
   text-decoration: none;
 }
 .notice-label { font-weight: 600; }
-.notice-arrow { color: var(--accent); transition: transform 0.2s ease; }
+.notice-arrow { color: var(--gold); transition: transform 0.2s ease; }
 .notice a:hover .notice-arrow { transform: translateX(3px); }
 .notice a:hover { text-decoration: underline; text-underline-offset: 0.25em; }
 .notice :focus-visible { outline-color: var(--paper); outline-offset: -4px; }
@@ -407,7 +408,7 @@ h2 {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--gold);
   transform: translateY(-2px);
 }
 
@@ -476,7 +477,7 @@ h2 {
   overflow: hidden;
 }
 
-/* Scene: three grey dots (an idea…) merge, turn vermilion, and fill the screen. */
+/* Scene: three grey dots (an idea…) merge, turn blue, and fill the screen. */
 .scene-dot { background: var(--accent); }
 .scene-dot .scene-sticky {
   display: grid;
@@ -566,7 +567,7 @@ h2 {
   width: 0.2em;
   height: 0.2em;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--gold);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -624,7 +625,7 @@ h2 {
   max-height: calc(100vh - var(--header-h) - 120px);
   margin-inline: auto;
   background-color: var(--paper-deep);
-  background-image: radial-gradient(circle, rgba(22, 19, 15, 0.16) 1px, transparent 1.4px);
+  background-image: radial-gradient(circle, rgba(11, 15, 25, 0.14) 1px, transparent 1.4px);
   background-size: 20px 20px;
   background-position: 10px 10px;
 }
@@ -657,7 +658,7 @@ h2 {
   stroke-linejoin: round;
 }
 .ill .a,
-.icon .a { fill: var(--accent); }
+.icon .a { fill: var(--gold); }
 .ill .k { fill: var(--ink); }
 .ill .c {
   fill: none;
@@ -667,7 +668,7 @@ h2 {
   stroke-linejoin: round;
 }
 
-/* Drawing: strokes trace themselves, then the vermilion "period" lands. */
+/* Drawing: strokes trace themselves, then the gold "period" lands. */
 .js-motion .ill .d,
 .js-motion .ill .c {
   stroke-dasharray: 1;
@@ -731,7 +732,7 @@ h2 {
 
 .js .build-item .build-name { color: var(--faint); }
 .js .build-item.is-active .build-name { color: var(--ink); }
-.js .build-item.is-active .build-name .period { color: var(--accent); }
+.js .build-item.is-active .build-name .period { color: var(--gold); }
 .js .build-item.is-active .build-note { color: var(--ink); }
 
 .js-motion .build-name { transition: color 0.35s ease, transform 0.5s var(--ease-out); }
@@ -928,7 +929,7 @@ h2 {
   max-width: min(100%, 62vh);
   aspect-ratio: 1;
   background-color: var(--paper-deep);
-  background-image: radial-gradient(circle, rgba(22, 19, 15, 0.16) 1px, transparent 1.4px);
+  background-image: radial-gradient(circle, rgba(11, 15, 25, 0.14) 1px, transparent 1.4px);
   background-size: 20px 20px;
   background-position: 10px 10px;
 }
@@ -946,7 +947,7 @@ h2 {
 .journey .thin { stroke-width: 2; }
 .journey .dash { stroke-dasharray: 8 9; }
 .journey .f { fill: var(--accent); }
-.journey .beam { fill: rgba(214, 58, 31, 0.1); }
+.journey .beam { fill: rgba(29, 79, 160, 0.1); }
 .journey .screen { fill: var(--paper); opacity: 0; transition: opacity 0.6s ease; }
 [data-step="6"] .journey .screen { opacity: 1; }
 .journey .q {
@@ -981,7 +982,7 @@ h2 {
   transform-origin: center;
 }
 .journey .j-loop { transform-origin: 240px 200px; }
-.journey .j-dot { fill: var(--accent); }
+.journey .j-dot { fill: var(--gold); }
 
 /* 1 — Find a need: people, one of them with a problem */
 [data-step="1"] .j-need,
@@ -1110,7 +1111,7 @@ h2 {
   height: 12px;
   border-radius: 50%;
 }
-.status-now { background: var(--accent); }
+.status-now { background: var(--gold); }
 .status-planned { border: 1.5px dashed var(--accent); }
 .status-optional { border: 1.5px solid var(--ink); }
 .js-motion .status-planned { animation: spin 9s linear infinite; }
@@ -1206,7 +1207,7 @@ h2 {
   height: 8px;
   margin-right: 10px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--gold);
   transform: translateY(-2px);
 }
 .quote-count { display: none; }
@@ -1313,6 +1314,48 @@ h2 {
   color: var(--muted);
 }
 
+/* ---------- Board (cards from config.board) ---------- */
+
+.team-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(32px, 4vw, 48px) var(--col-gap);
+  margin-top: clamp(48px, 6vw, 72px);
+}
+@media (max-width: 999px) {
+  .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.team-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+.team-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 25%;
+  filter: grayscale(1) contrast(1.05);
+  transition: filter 0.4s ease;
+}
+.team-card:hover .team-photo img { filter: none; }
+.team-name {
+  margin-top: 16px;
+  font: 600 1.0625rem/1.3 var(--sans);
+}
+.team-role {
+  margin-top: 4px;
+  font-size: 0.9375rem;
+  color: var(--muted);
+}
+
 /* ---------- Join (dark) ---------- */
 
 .join {
@@ -1401,7 +1444,7 @@ h2 {
   font-family: var(--serif);
   font-size: 1.75rem;
   line-height: 1.1;
-  color: var(--accent);
+  color: var(--gold);
 }
 .join-steps strong {
   display: block;
@@ -1414,6 +1457,8 @@ h2 {
 .join-steps [data-join-ready] { display: block; }
 
 .join .inline-link { color: var(--night-text); }
+.join .inline-link:hover { text-decoration-color: var(--gold); }
+.join .btn-light:hover { background: var(--gold); color: var(--night); }
 
 .partners p {
   margin-top: 22px;

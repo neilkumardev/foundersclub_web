@@ -105,6 +105,45 @@
     photoSection.hidden = false;
   }
 
+  // Board: one card per member; a blank tile stands in until a headshot loads.
+  var board = Array.isArray(cfg.board) ? cfg.board.filter(function (m) { return m && trim(m.name); }) : [];
+  var teamSection = document.querySelector("[data-team]");
+  var teamGrid = document.querySelector("[data-team-grid]");
+  if (board.length && teamSection && teamGrid) {
+    board.forEach(function (member) {
+      var name = trim(member.name);
+      var li = document.createElement("li");
+      li.className = "team-card";
+
+      var frame = document.createElement("div");
+      frame.className = "team-photo";
+
+      if (trim(member.photo)) {
+        var img = document.createElement("img");
+        img.alt = "Headshot of " + name;
+        img.loading = "lazy";
+        img.addEventListener("error", function () { img.remove(); });
+        img.src = member.photo;
+        frame.appendChild(img);
+      }
+      li.appendChild(frame);
+
+      var h3 = document.createElement("h3");
+      h3.className = "team-name";
+      h3.textContent = name;
+      li.appendChild(h3);
+
+      if (trim(member.role)) {
+        var role = document.createElement("p");
+        role.className = "team-role";
+        role.textContent = member.role;
+        li.appendChild(role);
+      }
+      teamGrid.appendChild(li);
+    });
+    teamSection.hidden = false;
+  }
+
   /* ---------- Mobile menu ---------- */
 
   var toggle = document.querySelector(".menu-toggle");
@@ -195,7 +234,7 @@
     return travel > 0 ? clamp01((headerH - rect.top) / travel) : 0;
   }
 
-  // Scene: an idea's three dots merge into one vermilion dot that fills the screen.
+  // Scene: an idea's three dots merge into one blue dot that fills the screen.
   var dotScene = document.querySelector(".scene-dot");
   if (motion && dotScene) {
     var dotFill = dotScene.querySelector(".dot-fill");
@@ -427,10 +466,10 @@
 
   /* ---------- Reveal on scroll; siblings in lists arrive one after another ---------- */
 
-  var revealTargets = all(".section-head, .what-head, .board-title, .board-item, .ask, .photo-strip figure, .meeting-item, .join-steps li, .partners");
+  var revealTargets = all(".section-head, .what-head, .board-title, .board-item, .ask, .photo-strip figure, .team-card, .meeting-item, .join-steps li, .partners");
   revealTargets.forEach(function (el) {
     el.classList.add("reveal");
-    if (el.matches(".board-item, .photo-strip figure, .meeting-item, .join-steps li")) {
+    if (el.matches(".board-item, .photo-strip figure, .team-card, .meeting-item, .join-steps li")) {
       var index = Array.prototype.indexOf.call(el.parentNode.children, el);
       el.style.setProperty("--delay", (index * 0.09).toFixed(2) + "s");
     }

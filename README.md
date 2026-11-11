@@ -8,7 +8,7 @@ serve.py      local preview server (no caching)
 styles.css    identity, layout, motion
 config.js     editable club details (join link, email, meeting info, Instagram)
 main.js       applies config, mobile menu, scroll and hover animations
-favicon.svg   vermilion dot
+favicon.svg   gold dot on navy
 ```
 
 ## Preview
@@ -23,7 +23,7 @@ Then open http://localhost:4173. This server turns off browser caching, so edits
 
 ## Publishing an update
 
-`index.html` loads `styles.css?v=4`, `config.js?v=4` and `main.js?v=4`. When you change any of those files, bump the number (for example to `?v=5`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
+`index.html` loads `styles.css?v=9`, `config.js?v=9` and `main.js?v=9`. When you change any of those files, bump the number (for example to `?v=10`) in all three links, so visitors' browsers fetch the new versions instead of cached ones.
 
 ## Edit club details
 
@@ -35,6 +35,7 @@ Everything that changes often is in `config.js`:
 | `contactEmail` | While empty, mentors and speakers are pointed to Instagram or Room 0108. Once set, a mailto link appears. |
 | `instagramUrl`, `instagramHandle` | Set both to `""` to hide every Instagram link. |
 | `meeting.*` | Cadence, start and end time, room, host, school. Leave `end` empty until it's confirmed. Leave `host` empty to hide it. |
+| `board` | Board members for the "Board" section, in display order: `{ name, role, photo }`. Put headshots in `images/board/` (any size; they're cropped to 4:5 around the face). A missing photo shows a blank tile. |
 | `photos` | Real meeting photos. While the list is empty, the "At meetings" section stays hidden. Put the files in an `images/` folder and list them as `{ src, alt, caption }`. They show in grayscale and turn to colour on hover. |
 
 Page copy is plain HTML in `index.html`, one `<section>` per part of the page.
@@ -45,8 +46,8 @@ It's a static folder, so any static host works: GitHub Pages, Netlify, Vercel, C
 
 ## Motion and accessibility
 
-- Graphics are inline SVG line drawings in `index.html` (no image files). Each one ends in a vermilion dot.
+- Graphics are inline SVG line drawings in `index.html` (no image files). Each one ends in a gold dot.
 - Motion: the hero types in, a marquee lists what people build, the project types take over the middle of the screen one at a time (the index along the bottom jumps between them), the six step dots and track fill as you scroll, the improve→build loop draws when step 5 is reached, icons draw in, sections reveal, buttons lean toward the cursor, and there's a reading-progress line under the header.
 - With `prefers-reduced-motion: reduce`, all of that is skipped and the page shows its finished state.
 - Without JavaScript, all content is visible and the menu shows as plain links.
-- Colours were checked for WCAG AA. Vermilion text is only used at large sizes; small accent text uses the deeper `--accent-deep`.
+- Colours are Bellevue High blue, gold, white and black, checked for WCAG AA. Gold is never used for text on white (too light); it marks dots and decorations, and is used as text only on navy.
